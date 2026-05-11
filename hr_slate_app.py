@@ -16,7 +16,7 @@ HAS_PB = False
 
 try:
 from curl_cffi import requests as _r
-def _get(u, **k): return _r.get(u, impersonate=“chrome110”, timeout=30, **k)
+def _get(u, **k): return _r.get(u, impersonate="chrome110", timeout=30, **k)
 except Exception:
 import requests as _r2
 def _get(u, **k): return _r2.get(u, timeout=30, **k)
