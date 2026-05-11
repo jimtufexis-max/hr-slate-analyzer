@@ -1191,7 +1191,7 @@ for row_games in game_rows:
     for col, (g, local_i) in zip(chip_cols, [(g, games.index(g)) for g in row_games]):
         i = local_i
         is_sel = (st.session_state.game_idx == i)
-        label = f"{'â... ' if is_sel else ''}{g['away']} @ {g['home']}"
+        label = f"{'★ ' if is_sel else ''}{g['away']} @ {g['home']}"
         if col.button(
             label,
             key=f"game_chip_{i}",
@@ -1213,7 +1213,7 @@ wc1,wc2,wc3,wc4,wc5=st.columns(5)
 wc1.metric("🌡ï¸ Temp",f"{w['temp']:.0f}°F")
 wc2.metric("💨 Wind",wind_label(w['wind'],w['wdir']))
 wc3.metric("🌧ï¸ Rain",f"{w['rain']:.0f}%")
-wc4.metric("ðYYï¸ Park",f"{pf:.2f}Ã-- ({home})")
+wc4.metric("🏟️ Park",f"{pf:.2f}× ({home})")
 wc5.metric("☀ï¸ Weather",f"{ws:.0f}/100")
 st.markdown("---")
 
@@ -1295,13 +1295,13 @@ def render_team(bat_team, opp_sp_id, opp_sp_name, opp_sp_hand, p_row, arsenal, t
         for c in ("p_brl_pct","p_hard_hit_pct","p_k_pct","p_hr_per_fb","era"))
     avg_note = ("" if has_real_data else
         " <span style='font-size:.63rem;color:#f59e0b;background:rgba(245,158,11,.12);"
-        "padding:1px 6px;border-radius:4px;border:1px solid rgba(245,158,11,.3)'>â... lg avg</span>")
+        "padding:1px 6px;border-radius:4px;border:1px solid rgba(245,158,11,.3)'>★ lg avg</span>")
 
     stats_html="".join(
         f"<div class='sp-stat'><span class='sp-val'>{v}</span><span class='sp-lbl'>{l}</span></div>"
         for l,v in [("IP",_fmt(ip,1)),("ERA",_fmt(era)),("FIP",_fmt(fip)),("xFIP",_fmt(xfip)),
                     ("K%",_fmt(kpct,1,"%")),("BB%",_fmt(bbpct,1,"%")),
-                    ("GB%",_fmt(gbpct,1,"%")),("HR/FB",_fmt(hrfb,1,"%")),("Park",f"{pf:.2f}Ã--")])
+                    ("GB%",_fmt(gbpct,1,"%")),("HR/FB",_fmt(hrfb,1,"%")),("Park",f"{pf:.2f}×")])
 
     arsenal_chips="".join(
         f"<span class='ac' style='color:{PITCH_COLORS.get(pt,'#6b7280')};border-color:{PITCH_COLORS.get(pt,'#6b7280')}44;background:{PITCH_COLORS.get(pt,'#6b7280')}11'>"
@@ -1727,7 +1727,7 @@ def render_team(bat_team, opp_sp_id, opp_sp_name, opp_sp_hand, p_row, arsenal, t
                         f"P.Risk {score_pill(pr_val)} 25% &nbsp;"
                         f"Mix {score_pill(pm_s)} 20% &nbsp;"
                         f"Platoon {score_pill(pl_s)} 12% &nbsp;"
-                        f"Park <b>{pf:.2f}Ã--</b> · Weather <b>{ws:.0f}</b>"
+                        f"Park <b>{pf:.2f}×</b> · Weather <b>{ws:.0f}</b>"
                         f"</div>",unsafe_allow_html=True)
 
             with r2b:
@@ -1741,7 +1741,7 @@ def render_team(bat_team, opp_sp_id, opp_sp_name, opp_sp_hand, p_row, arsenal, t
                     for hand in ("R","L"):
                         sp=platoon.get(hand,{})
                         hl="plat-hl" if hand==opp_sp_hand else ""
-                        lbl=f"{'â... ' if hand==opp_sp_hand else ''}{'RHP' if hand=='R' else 'LHP'}"
+                        lbl=f"{'★ ' if hand==opp_sp_hand else ''}{'RHP' if hand=='R' else 'LHP'}"
                         yr=f" <sup style='color:#9ca3af'>{sp.get('season','')}</sup>" if sp.get("season")==SEASON_FALLBACK else ""
                         tbl2+=(f"<tr class='{hl}'>"
                                f"<td><b>{lbl}</b>{yr}</td>"
@@ -1794,7 +1794,7 @@ with tab_pitchers:
             risk=calc_pitcher_hr_risk(sp_p_row) if sp_p_row else calc_pitcher_hr_risk(None)
             has_data = sp_p_row and any(_fv(sp_p_row,c) is not None
                 for c in ("p_brl_pct","p_hard_hit_pct","p_k_pct","era"))
-            avg_tag = "" if has_data else " <span style='font-size:.63rem;color:#f59e0b;background:rgba(245,158,11,.1);padding:1px 6px;border-radius:4px;border:1px solid rgba(245,158,11,.25)'>â... league avg used</span>"
+            avg_tag = "" if has_data else " <span style='font-size:.63rem;color:#f59e0b;background:rgba(245,158,11,.1);padding:1px 6px;border-radius:4px;border:1px solid rgba(245,158,11,.25)'>★ league avg used</span>"
             rc="pill-r" if risk and risk>=65 else ("pill-y" if risk and risk>=45 else "pill-g")
             st.markdown(f"**HR Risk Score:** <span class='pill {rc}'>{risk or '--'}</span>{avg_tag}",unsafe_allow_html=True)
             st.markdown("")
@@ -1985,7 +1985,7 @@ with tab_scores:
                     f"<div class='sf-metric'>"
                     f"<div class='sf-metric-name'>{lbl}</div>"
                     f"<div>{val_chip(v,lo,hi,hib,dec,suf)} "
-                    f"<span class='wt-chip'>Ã--{wt}wt</span></div>"
+                    f"<span class='wt-chip'>×{wt}wt</span></div>"
                     f"</div>"
                     f"{score_bar_html(component, '#3b82f6')}"
                     f"</div>")
@@ -2003,12 +2003,28 @@ with tab_scores:
             st.caption("🟢 Green = low risk pitcher (good for pitcher, fewer HRs) · 🔴 Red = high risk (bad for pitcher, more HRs expected) · Bar shows component contribution to overall score")
 
             # Determine which pitcher to show based on active team tab
-            active_tab = st.session_state.get("selected_team_key","away")
+            # Determine active team from the PICKED hitter, not session state
+            # (session state only updates when clicking in team tabs)
+            active_tab = "away"  # default
+            if picked_id and all_cached_rows:
+                for r in all_cached_rows:
+                    if str(r.get("id","")) == str(picked_id):
+                        active_tab = r.get("team_key") or st.session_state.get("selected_team_key","away")
+                        # team_key stored in rows_away vs rows_home
+                        break
+                # Determine from which cache the hitter came
+                away_ids = {str(r.get("id","")) for r in st.session_state.get("rows_away",[])}
+                home_ids = {str(r.get("id","")) for r in st.session_state.get("rows_home",[])}
+                if str(picked_id) in away_ids:
+                    active_tab = "away"
+                elif str(picked_id) in home_ids:
+                    active_tab = "home"
+
             sp_name_show = home_sp_name if active_tab=="away" else away_sp_name
             p_row_show   = away_p_row   if active_tab=="away" else home_p_row
             has_data = p_row_show and any(_fv(p_row_show,c) is not None
                 for c in ("p_brl_pct","p_hard_hit_pct","p_k_pct"))
-            st.caption(f"Pitcher: **{sp_name_show}**" + (" · â... league avg used for missing metrics" if not has_data else ""))
+            st.caption(f"Pitcher: **{sp_name_show}**" + (" · * league avg used for missing metrics" if not has_data else ""))
 
             MLB_AVG_DISPLAY = {
                 "p_brl_pct":6.5,"p_hr_per_fb":12.0,"p_hard_hit_pct":37.0,
@@ -2035,14 +2051,14 @@ with tab_scores:
                 s = _score(v, lo, hi, hib)
                 if s is not None: total_s_p += s*wt; total_w_p += wt
                 component = round(s) if s is not None else None
-                avg_mark = " <span style='font-size:.6rem;color:#f59e0b'>â...avg</span>" if is_avg else ""
+                avg_mark = " <span style='font-size:.6rem;color:#f59e0b'>★avg</span>" if is_avg else ""
                 # Invert chip color for pitcher stats: green = safe (low value), red = risky (high value)
                 rows_html_p += (
                     f"<div class='score-formula-row'>"
                     f"<div class='sf-metric'>"
                     f"<div class='sf-metric-name'>{lbl}{avg_mark}</div>"
                     f"<div>{val_chip(v, lo, hi, not hib, dec, suf)} "
-                    f"<span class='wt-chip'>Ã--{wt}wt</span></div>"
+                    f"<span class='wt-chip'>×{wt}wt</span></div>"
                     f"</div>"
                     f"{score_bar_html(component, '#3b82f6')}"
                     f"</div>")
@@ -2081,7 +2097,7 @@ with tab_scores:
                 ("🎯 Pitch Mix wOBA",  pm_score_disp, 0.25, "hitter's wOBA vs pitcher's arsenal weighted by pitch usage"),
                 ("🏠Hitter Quality",  total_hs,      0.22, "barrel%, hard hit%, EV, launch, FB%, K%"),
                 ("⚡ Platoon wOBA",    pl_score_disp, 0.18, f"hitter vs {'RHP' if (active_tab=='away' and home_sp_hand=='R') or (active_tab=='home' and away_sp_hand=='R') else 'LHP'} this season"),
-                ("ðYYï¸ Park Factor",    round(pf_score_val), 0.05, f"{home} · {pf_val:.2f}Ã-- factor"),
+                ("🏟️ Park Factor",    round(pf_score_val), 0.05, f"{home} · {pf_val:.2f}× factor"),
                 ("☀ï¸ Weather",        round(ws_val),  0.02, f"{w['temp']:.0f}°F · {wind_label(w['wind'],w['wdir'])} · {w['rain']:.0f}% rain" if 'w' in dir() and w else "unavailable"),
             ]
 
@@ -2146,7 +2162,7 @@ with tab_scores:
     <tr><td><b>K %</b></td><td><span class='src-tag src-fg'>FanGraphs</span></td><td class='range-lbl'>14% â' 35%</td><td><span class='dir-r'>â" Low</span> (hitters make contact)</td><td>15</td></tr>
     <tr><td><b>FB % Allowed</b></td><td><span class='src-tag src-fg'>FanGraphs</span></td><td class='range-lbl'>20% â' 50%</td><td><span class='dir-r'>â' High</span> (more fly balls)</td><td>7</td></tr>
     <tr><td><b>Exit Velo Allowed</b></td><td><span class='src-tag src-sc'>Statcast</span></td><td class='range-lbl'>82 â' 93 mph</td><td><span class='dir-r'>â' High</span></td><td>3</td></tr>
-    <tr><td colspan='5' style='color:#64748b;font-size:.74rem;padding-top:6px'>â... When a pitcher has no data, 2024-25 MLB league averages are substituted to ensure a score is always produced (~50 = league average risk)</td></tr>
+    <tr><td colspan='5' style='color:#64748b;font-size:.74rem;padding-top:6px'>★ When a pitcher has no data, 2024-25 MLB league averages are substituted to ensure a score is always produced (~50 = league average risk)</td></tr>
     </tbody></table>""", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -2158,7 +2174,7 @@ with tab_scores:
     <tr><td><b>Hitter Quality</b></td><td>22%</td><td>Weighted composite of barrel%, hard hit%, EV, launch angle, sweet spot%, FB%, pull%, K% -- each scaled 0-100 within MLB percentile range</td><td><span class='src-tag src-sc'>Statcast</span> <span class='src-tag src-fg'>FanGraphs</span></td></tr>
     <tr><td><b>Pitcher HR Risk</b></td><td>28%</td><td>Barrel% allowed, HR/FB, hard hit% allowed, K%, FB%, EV allowed -- weighted composite, league avg fallback when missing</td><td><span class='src-tag src-sc'>Statcast</span> <span class='src-tag src-fg'>FanGraphs</span></td></tr>
     <tr><td><b>Pitch Mix wOBA</b></td><td>25%</td><td>Hitter's wOBA vs each pitch type (league-wide) weighted by SP's arsenal usage %. Scaled: .220 = 0pts, .420 = 100pts</td><td><span class='src-tag src-sv'>Savant</span></td></tr>
-    <tr><td><b>Platoon wOBA</b></td><td>18%</td><td>Hitter's wOBA vs RHP or LHP this season. Scaled same as above. â... = today's matchup hand</td><td><span class='src-tag src-sv'>Savant</span></td></tr>
+    <tr><td><b>Platoon wOBA</b></td><td>18%</td><td>Hitter's wOBA vs RHP or LHP this season. Scaled same as above. ★ = today's matchup hand</td><td><span class='src-tag src-sv'>Savant</span></td></tr>
     <tr><td><b>Park Factor</b></td><td>5%</td><td>Multi-year park HR factor. 1.00 = neutral (50pts). Each 0.01 above/below neutral = ±1pt. COL=1.18 (best), SDP=0.93 (worst)</td><td>Historical</td></tr>
     <tr><td><b>Weather</b></td><td>2%</td><td>Temperature (warm = good), wind direction/speed (blowing out = good), rain probability (penalty). Open-Meteo hourly forecast at game time</td><td><span class='src-tag src-mlb'>Open-Meteo</span></td></tr>
     </tbody></table>""", unsafe_allow_html=True)
