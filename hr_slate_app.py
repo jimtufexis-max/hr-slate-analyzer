@@ -4,7 +4,7 @@ import numpy as np
 import math, datetime, traceback
 from io import StringIO
 
-st.set_page_config(page_title=“HR Slate Analyzer”, layout=“wide”, page_icon=“⚾”)
+st.set_page_config(page_title="HR Slate Analyzer", layout="wide", page_icon="⚾")
 
 try:
 import pybaseball as pb
